@@ -1,0 +1,5 @@
+asyncio
+redis
+prometheus_client
+msgpack
+opencv-python

@@ -1,0 +1,32 @@
+######################################################################
+# Sample Frame producer from video file to demostrate CAR detection.
+# The video file is from https://github.com/intel-iot-devkit/sample-videos/blob/master/person-bicycle-car-detection.mp4
+######################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-sample-car-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-sample-car
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-sample-car
+    spec:
+      containers:
+      - name: ei-fss
+        image: your-own-registry/ei-file-stream-service
+        imagePullPolicy: Always
+        env:
+        - name: VIDEO_FILE
+          value: person-bicycle-car-detection.mp4
+        - name: QUEUE_HOST
+          value: ei-redis-svc
+        - name: STREAM_NAME
+          value: sample-car
+        - name: INFER_TYPE
+          value: car
+

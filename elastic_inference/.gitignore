@@ -1,0 +1,10 @@
+.vscode
+__pycache__
+sample-videos
+frozen_darknet_yolov3*.*
+build/
+dist/
+redis.conf
+containers/*.tgz
+models/
+*.yaml

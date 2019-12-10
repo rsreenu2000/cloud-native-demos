@@ -1,0 +1,277 @@
+############################################
+# Redis deployment
+############################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ei-redis-config
+data:
+  redis.conf: |
+    notify-keyspace-events "Es"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ei-redis
+  template:
+    metadata:
+      labels:
+        app: ei-redis
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ei-redis-config
+      containers:
+      - image: clearlinux/redis
+        name: clearlinux-redis
+        imagePullPolicy: Always
+        command: ["redis-server"]
+        args: ["/etc/redis.conf","--protected-mode no"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/redis.conf
+            subPath: redis.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-redis-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 6379
+    targetPort: 6379
+    nodePort: 31003
+  selector:
+    app: ei-redis
+---
+############################################
+# Inference service for face recoginition
+# The inference model is https://docs.openvinotoolkit.org/2019_R2/_intel_models_face_detection_retail_0005_description_face_detection_retail_0005.html
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-infer-face-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ei-infer-face
+  template:
+    metadata:
+      labels:
+        app: ei-infer-face
+    spec:
+      containers:
+      - name: ei-infer
+        image: your-own-registry/ei-inference-service
+        imagePullPolicy: Always
+        env:
+        - name: MODEL_NAME
+          value: "face-detection-retail-0005"
+        - name: INPUT_QUEUE_HOST
+          value: ei-redis-svc
+        - name: OUTPUT_BROKER_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: face
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-infer-face-svc
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: ei-infer-face
+---
+############################################
+# Inference service for people recoginition
+# The inference model is https://github.com/intel/Edge-optimized-models/tree/master/SqueezeNet%205-Class%20detection
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-infer-people-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-people
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-infer-people
+    spec:
+      containers:
+      - name: ei-infer
+        image: your-own-registry/ei-inference-service
+        imagePullPolicy: Always
+        env:
+        - name: MODEL_NAME
+          value: "SqueezeNetSSD-5Class"
+        - name: INPUT_QUEUE_HOST
+          value: ei-redis-svc
+        - name: OUTPUT_BROKER_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: people
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-infer-people-svc
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: ei-infer-people
+---
+############################################
+# Inference service for car recoginition
+# The inference model is https://docs.openvinotoolkit.org/2019_R1/_person_vehicle_bike_detection_crossroad_0078_description_person_vehicle_bike_detection_crossroad_0078.html
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-infer-car-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-car
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-infer-car
+    spec:
+      containers:
+      - name: ei-infer
+        image: your-own-registry/ei-inference-service
+        imagePullPolicy: Always
+        env:
+        - name: MODEL_NAME
+          value: "person-vehicle-bike-detection-crossroad-0078"
+        - name: INPUT_QUEUE_HOST
+          value: ei-redis-svc
+        - name: OUTPUT_BROKER_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: car
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-infer-car-svc
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: ei-infer-car
+---
+############################################
+# Websocket server
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-websocket-server-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-websocket-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-websocket-server
+    spec:
+      containers:
+      - name: ei-wss
+        image: your-own-registry/ei-websocket-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 31611
+        env:
+        - name: STREAM_BROKER_REDIS_HOST
+          value: ei-redis-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-websocket-server-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 31611
+      targetPort: 31611
+      nodePort: 31611
+  selector:
+    app: ei-websocket-server
+---
+############################################
+# Gateway server
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-gateway-server-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-gateway-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-gateway-server
+    spec:
+      containers:
+      - name: ei-gws
+        image: your-own-registry/ei-gateway-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: STREAM_BROKER_HOST
+          value: ei-redis-svc
+        - name: WEBSOCKET_SERVER_HOST
+          value: ei-websocket-server-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-gateway-server-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 31002
+  selector:
+    app: ei-gateway-server

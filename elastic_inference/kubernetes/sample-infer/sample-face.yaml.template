@@ -1,0 +1,32 @@
+######################################################################
+# Sample Frame producer from video file to demostrate face detection.
+# The video file is from https://github.com/intel-iot-devkit/sample-videos/blob/master/head-pose-face-detection-female-and-male.mp4
+######################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-sample-face-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-sample-face
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-sample-face
+    spec:
+      containers:
+      - name: ei-fss
+        image: your-own-registry/ei-file-stream-service
+        imagePullPolicy: Always
+        env:
+        - name: VIDEO_FILE
+          value: head-pose-face-detection-female-and-male.mp4
+        - name: QUEUE_HOST
+          value: ei-redis-svc
+        - name: STREAM_NAME
+          value: sample-face
+        - name: INFER_TYPE
+          value: face
+
