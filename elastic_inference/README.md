@@ -1,9 +1,10 @@
 # Clear Linux based Elastic Inference Solution for Edge Computing
 
-## Design Principal
-This solution re-architect traditional monolithic inference pipeline to cloud native model. With ClearLinux as container base OS and openvino library, the inference workload can be scaled vertically on heterogonous hardware engine; while kubernetes also provide HPA(Horizontal POD Autoscale) for horizontal scale according to the collected metrics from whole system. The flexible scalability in this solution can help to meet with diverse requirements on Edge computing, such as diverse inference model size, diverse input source, etc.
+## Design Principle
+This solution re-architect traditional monolithic inference pipeline to cloud native model. With ClearLinux as container base OS and OpenVINO library, the inference workload can be scaled vertically on heterogeneous hardware engine; while kubernetes also provide HPA(Horizontal POD Autoscaler) for horizontal scale according to the collected metrics from the whole system. The flexible scalability in this solution can help to meet with diverse requirements on Edge computing, such as diverse inference model size, diverse input source, etc.
 
 _(NOTES: This project is only for demo purpose, please do not used in any production.)_
+
 ![Cloud Native Design Diagram](doc/images/cloud_native_design.png)
 
 ## Architecture
@@ -12,7 +13,7 @@ _(NOTES: This project is only for demo purpose, please do not used in any produc
 
 1. **[Camera Stream Service](apps/camera_stream_service.py)/[File Stream Service](apps/file_stream_service.py)**
 
-    The input source could be from camera or video file. There are more than input sources  to produce frames to different inference queues. For example, there are 3 cameras for face detection at same time, then all frames from these 3 cameras will be produced to face frame queue.
+    The input source could be from camera or video file. There are more than input sources  to produce frames to different inference queues. For example, there are 3 cameras for face detection at the same time, then all frames from these 3 cameras will be produced to face frame queue.
 
 2. **Frame Queue**
 
@@ -32,7 +33,7 @@ _(NOTES: This project is only for demo purpose, please do not used in any produc
 
 4. **Stream Broker Service**
 
-    The inference result is sent to stream broker with its IP/name information for futher actions like serverless function, dashboard etc. The stream broker also use redis and is the same one for frame queue by default.
+    The inference result is sent to stream broker with its IP/name information for further actions like serverless function, dashboard etc. The stream broker also use redis and is the same one for frame queue by default.
 
 5. **[Stream Websocket Server](apps/websocket_server.py)**
 
@@ -44,7 +45,7 @@ _(NOTES: This project is only for demo purpose, please do not used in any produc
 
 7. **[Gateway Server](apps/gateway_server.py)**
 
-    Gateway provides unified interface for the backend servers:
+    Gateway provides a unified interface for the backend servers:
     * `http://<gateway>`: Dashboard SPA web server
     * `http://<gateway>/api/`: Restful API server
     * `ws://<gateway>/<stream_name>`: Stream websocket server.
@@ -79,7 +80,7 @@ kubectl apply -f kubernetes/elastic-inference.yaml
 kubectl apply -f kubernetes/sample-infer/
 ```
 
-After above steps, the kubernete cluster will expose two service via NodePort:
+After the above steps, the kubernete cluster will expose two services via NodePort:
 * `<k8s cluster IP>:31003`
     Frame queue service to accept any external frame producer from IP cameras.
 * `<k8s cluster IP>:31002`
