@@ -1,7 +1,5 @@
 FROM clearlinux/openvino:latest
 
-MAINTAINER ken.lu@intel.com
-
 # create developer user to access /dev/video*
 RUN groupadd -g 44 -o developer
 RUN useradd -g 44 developer

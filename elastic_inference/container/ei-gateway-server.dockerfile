@@ -1,7 +1,5 @@
 FROM clearlinux/python:latest
 
-MAINTAINER ken.lu@intel.com
-
 RUN useradd developer
 USER developer
 
