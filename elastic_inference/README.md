@@ -69,7 +69,7 @@ _NOTE: Please get detail options and arguments for build.sh via `./container/bui
 
 1. Generate kubernetes yaml file with your own registry name like:
 ```
-tools/tools/gen-k8s-yaml.sh -f kubernetes/elastic-inference.yaml.template -y <your container registry>
+tools/tools/gen-k8s-yaml.sh -f kubernetes/elastic-inference.yaml.template -r <your container registry>
 ```
 2. Deploy the core services as:
 ```
