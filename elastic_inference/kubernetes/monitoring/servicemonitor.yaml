@@ -1,0 +1,47 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ei-infer-people-app
+  labels:
+    service-monitor: ei-infer-people-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-people-app
+  endpoints:
+  - port: web
+      #      scheme: http
+      #path: '/metrics'
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ei-infer-face-app
+  labels:
+    service-monitor: ei-infer-face-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-face-app
+  endpoints:
+  - port: web
+      #      scheme: http
+      #path: '/metrics'
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ei-infer-car-app
+  labels:
+    service-monitor: ei-infer-car-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-car-app
+  endpoints:
+  - port: web
+      #      scheme: http
+      #path: '/metrics'
+    interval: 15s
