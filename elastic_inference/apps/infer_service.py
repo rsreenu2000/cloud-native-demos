@@ -68,6 +68,9 @@ class InferServiceApp(CLCNAppBase):
         self._guage_infer_fps = prom.Gauge(
             'ei_infer_fps', 'Total infererence FPS')
 
+        self._guage_drop_fps = prom.Gauge(
+            'ei_drop_fps', 'Drop frames for infer')
+
     def run(self):
         in_redis_conn = redis.StrictRedis(self.in_queue_host)
         out_redis_conn = in_redis_conn
@@ -80,6 +83,7 @@ class InferServiceApp(CLCNAppBase):
 
         infer_task = OpenVinoInferEngineTask(input_queue, out_broker,
                                              self._report_metric_infer_fps,
+                                             self._report_metric_drop_fps,
                                              model_dir=self.model_dir,
                                              model_name=self.model_name)
 
@@ -88,6 +92,9 @@ class InferServiceApp(CLCNAppBase):
 
     def _report_metric_infer_fps(self, num):
         self._guage_infer_fps.set(num)
+
+    def _report_metric_drop_fps(self, num):
+        self._guage_drop_fps.set(num)
 
 def start_app():
     """

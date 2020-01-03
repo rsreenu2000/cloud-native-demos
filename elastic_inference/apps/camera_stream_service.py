@@ -20,7 +20,6 @@ import os
 import sys
 import socket
 import redis
-import prometheus_client as prom
 
 # add current path into PYTHONPATH
 APP_PATH = os.path.dirname(__file__)
@@ -51,23 +50,9 @@ class CameraServiceApp(CLCNAppBase):
                 self._camera_number)
         self._stream_info = StreamInfo(stream_name, self._infer_type)
 
-        self._prometheus_gateway_host = self.get_env(
-            "PROMETHEUS_GATEWAY_HOST",
-            None)
-        self._prometheus_gateway_port = self.get_env(
-            "PROMETHEUS_GATEWAY_PORT",
-            "9091")
-        self._prometheus_registry = prom.CollectorRegistry()
-        self._metric_gauge_drop_frames = prom.Gauge(
-            'ei_drop_frames',
-            'Drop frames for infer',
-            registry=self._prometheus_registry)
-
     def run(self):
         redis_conn = redis.StrictRedis(self._redis_host, self._redis_port)
         out_queue = RedisFrameQueue(redis_conn, self._infer_type)
-        out_queue.report_metric_drop_frames_fn = \
-            self._report_metric_drop_frame_to_prometheus
 
         frame_queue = queue.Queue(10)
         capture_task = WebCamCaptureTask(self._camera_number, self._camera_fps,
@@ -76,16 +61,6 @@ class CameraServiceApp(CLCNAppBase):
                                                out_queue)
         capture_task.start()
         publisher_task.start()
-
-    def _report_metric_drop_frame_to_prometheus(self, num):
-        if self._prometheus_gateway_host is None or \
-            len(self._prometheus_gateway_host) == 0:
-            return
-        self._metric_gauge_drop_frames.set(num)
-        prom.push_to_gateway(
-            self._prometheus_gateway_host + ":" + self._prometheus_gateway_port,
-            job=self._stream_info.id,
-            registry=self._prometheus_registry)
 
 def start_app():
     """

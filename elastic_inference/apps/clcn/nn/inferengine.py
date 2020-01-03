@@ -18,14 +18,16 @@ class InferEngineTask(CLCNTask):
     Inference task.
     """
 
-    def __init__(self, input_queue, output_broker, report_metric_fps_fn=None):
+    def __init__(self, input_queue, output_broker, report_metric_fps_fn=None, report_drop_fps_fn=None):
         CLCNTask.__init__(self)
         self._input_queue = input_queue
         self._output_broker = output_broker
         self._infer_frame_count = 0
+        self._drop_frame_count = 0
         self._infer_time_start = 0
         self._cached_streams = {}
         self._report_metric_fps_fn = report_metric_fps_fn
+        self._report_drop_fps_fn = report_drop_fps_fn
 
     def infer(self, frame):
         """
@@ -51,6 +53,8 @@ class InferEngineTask(CLCNTask):
                 time.sleep(0.05)
                 continue
 
+            self._drop_frame_count += self._input_queue.drop()
+
             info = StreamInfo(msg.name, msg.category, "inferred")
             if info.id not in self._cached_streams.keys():
                 self._output_broker.register_stream(info)
@@ -75,11 +79,17 @@ class InferEngineTask(CLCNTask):
             if duration > 10:
                 LOG.info("[%s] Infer speed: %02f FPS", \
                     info.category, self._infer_frame_count / duration)
+                LOG.info("[%s] Drop frame speed: %02f FPS", \
+                    info.category, self._drop_frame_count / duration)
                 if self._report_metric_fps_fn is not None:
                     self._report_metric_fps_fn(
                         self._infer_frame_count / duration)
+                if self._report_drop_fps_fn is not None:
+                    self._report_drop_fps_fn(
+                        self._drop_frame_count / duration)
                 self._infer_time_start = now
                 self._infer_frame_count = 0
+                self._drop_frame_count = 0
 
 
 class OpenVinoInferEngineTask(InferEngineTask):
@@ -92,11 +102,13 @@ class OpenVinoInferEngineTask(InferEngineTask):
 
     def __init__(self, origin_frame_queue, inferred_frame_queue,
                  report_metric_fps_fn=None,
+                 report_drop_fps_fn=None,
                  model_dir=_DEFAULT_MODEL_DIR,
                  model_name=_DEFAULT_MODLE_NAME):
         InferEngineTask.__init__(self, origin_frame_queue, \
             inferred_frame_queue, \
-            report_metric_fps_fn)
+            report_metric_fps_fn, \
+            report_drop_fps_fn)
         LOG.info("Model dir: %s", model_dir)
         LOG.info("Model name: %s", model_name)
         self._plugin = self._init_openvino_cpu_plugin()
