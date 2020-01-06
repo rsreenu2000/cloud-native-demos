@@ -19,8 +19,5 @@ ENV CAMERA_FPS=15
 # Redis stream queue address
 ENV QUEUE_HOST="127.0.0.1"
 ENV QUEUE_PORT="6379"
-# Prometheus gateway address for metric collection
-ENV PROMETHEUS_GATEWAY_HOST=""
-ENV PROMETHEUS_GATEWAY_PORT="9091"
 
 CMD ["/apps/camera_stream_service.py"]
