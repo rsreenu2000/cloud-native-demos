@@ -39,6 +39,7 @@ class InferEngineTask(CLCNTask):
         """
         Task entry
         """
+        idle_count = 0
         self._infer_time_start = time.time()
         while not self.is_task_stopping:
             now = time.time()
@@ -51,8 +52,19 @@ class InferEngineTask(CLCNTask):
             msg = self._input_queue.pop()
             if msg is None:
                 time.sleep(0.05)
+                idle_count += 1
+                # reset the infer and drop fps when idle over 30s
+                if idle_count > 600:
+                    idle_count = 0
+                    LOG.info("Idle for 30 seconds")
+                    if self._report_metric_fps_fn is not None:
+                        self._report_metric_fps_fn(0)
+                    if self._report_drop_fps_fn is not None:
+                        self._report_drop_fps_fn(0)
+
                 continue
 
+            idle_count = 0
             self._drop_frame_count += self._input_queue.drop()
 
             info = StreamInfo(msg.name, msg.category, "inferred")
