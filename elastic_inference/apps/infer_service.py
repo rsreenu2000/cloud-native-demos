@@ -71,6 +71,9 @@ class InferServiceApp(CLCNAppBase):
         self._guage_drop_fps = prom.Gauge(
             'ei_drop_fps', 'Drop frames for infer')
 
+        self._guage_scale_ratio = prom.Gauge(
+            'ei_scale_ratio', 'Scale ratio for inference, (ei_infer_fps+ei_drop_fps)/ei_infer_fps')
+
     def run(self):
         in_redis_conn = redis.StrictRedis(self.in_queue_host)
         out_redis_conn = in_redis_conn
@@ -82,19 +85,17 @@ class InferServiceApp(CLCNAppBase):
         out_broker.start_streams_monitor_task()
 
         infer_task = OpenVinoInferEngineTask(input_queue, out_broker,
-                                             self._report_metric_infer_fps,
-                                             self._report_metric_drop_fps,
+                                             self._report_metric,
                                              model_dir=self.model_dir,
                                              model_name=self.model_name)
 
         infer_task.start()
         prom.start_http_server(8000)
 
-    def _report_metric_infer_fps(self, num):
-        self._guage_infer_fps.set(num)
-
-    def _report_metric_drop_fps(self, num):
-        self._guage_drop_fps.set(num)
+    def _report_metric(self, infer_fps, drop_fps, scale_ratio):
+        self._guage_infer_fps.set(infer_fps)
+        self._guage_drop_fps.set(drop_fps)
+        self._guage_scale_ratio.set(scale_ratio)
 
 def start_app():
     """
