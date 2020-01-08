@@ -26,6 +26,7 @@ $ kubectl -n custom-metrics create secret tls cm-adapter-serving-certs --cert=./
 ```shell
 $ git clone https://github.com/directxman12/k8s-prometheus-adapter.git
 $ cd k8s-prometheus-adapter
+$ git checkout -b v0.5.0 v0.5.0
 ```
 
 ### Make changes to `k8s-prometheus-adapter/deploy/manifests/custom-metrics-apiserver-deployment.yaml`.
@@ -74,4 +75,4 @@ spec:
         averageValue: 1
 ```
 
-Once prometheus metric `ei_drop_fps` is bigger than 1, the HPA will try to calculate the replicas to scale.
+Once prometheus metric `ei_scale_ratio` is not 1, the HPA will calculate the replicas to scalei up or down.

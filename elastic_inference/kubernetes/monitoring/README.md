@@ -2,15 +2,56 @@
 
 ## Start monitor
 
+```shell
+$ git clone https://github.com/coreos/kube-prometheus.git
+$ cd kube-prometheus
+$ git checkout -b v0.3.0 v0.3.0
+```
+
 First start the kube-prometheus, just make minor change to export Grafana and Prometheus
 service as NodePort for accessing easily. For example,
 
 * grafana -- 31008
 * prometheus-k8s -- 31009
 
-` $ kubectl create -f manifests/setup/ `
+```shell
+diff --git a/manifests/grafana-service.yaml b/manifests/grafana-service.yaml
+index 3acdf1e..6587f02 100644
+--- a/manifests/grafana-service.yaml
++++ b/manifests/grafana-service.yaml
+@@ -6,9 +6,11 @@ metadata:
+   name: grafana
+   namespace: monitoring
+ spec:
++  type: NodePort
+   ports:
+   - name: http
+     port: 3000
+     targetPort: http
++    nodePort: 31008
+   selector:
+     app: grafana
+diff --git a/manifests/prometheus-service.yaml b/manifests/prometheus-service.yaml
+index 4f61e88..56af5ce 100644
+--- a/manifests/prometheus-service.yaml
++++ b/manifests/prometheus-service.yaml
+@@ -6,10 +6,12 @@ metadata:
+   name: prometheus-k8s
+   namespace: monitoring
+ spec:
++  type: NodePort
+   ports:
+   - name: web
+     port: 9090
+     targetPort: web
++    nodePort: 31009
+   selector:
+```
 
-` $ kubectl create -f manifests/ `
+```shell
+$ kubectl create -f manifests/setup/
+$ kubectl create -f manifests/
+```
 
 Now start the demo.
 Then start the servicemonitor.yaml.
