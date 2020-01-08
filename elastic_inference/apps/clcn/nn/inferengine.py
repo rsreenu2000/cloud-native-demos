@@ -39,6 +39,7 @@ class InferEngineTask(CLCNTask):
         Task entry
         """
         idle_count = 0
+        max_infer_fps = 0
         self._infer_time_start = time.time()
         while not self.is_task_stopping:
             now = time.time()
@@ -56,8 +57,10 @@ class InferEngineTask(CLCNTask):
                 if idle_count > 600:
                     idle_count = 0
                     LOG.info("Idle for 30 seconds")
+                    # idle means it has the potential to scale down
+                    # thus set the scale ratio to 0.5
                     if self._report_metric_fn is not None:
-                        self._report_metric_fn(0, 0, 1)
+                        self._report_metric_fn(0, 0, 0.5)
 
                 continue
 
@@ -86,16 +89,24 @@ class InferEngineTask(CLCNTask):
             duration = now - self._infer_time_start
             self._infer_frame_count += 1
             if duration > 10:
+                infer_fps = self._infer_frame_count / duration
+                drop_fps = self._drop_frame_count / duration
+
                 LOG.info("[%s] Infer speed: %02f FPS", \
-                    info.category, self._infer_frame_count / duration)
+                    info.category, infer_fps)
                 LOG.info("[%s] Drop frame speed: %02f FPS", \
-                    info.category, self._drop_frame_count / duration)
+                    info.category, drop_fps)
+
+                if infer_fps > max_infer_fps:
+                    max_infer_fps = infer_fps
+                if drop_fps > 0:
+                    scale_ratio = (infer_fps + drop_fps) / infer_fps
+                else:
+                    scale_ratio = infer_fps/max_infer_fps
+
                 if self._report_metric_fn is not None:
                     self._report_metric_fn(
-                        self._infer_frame_count / duration, \
-                        self._drop_frame_count / duration, \
-                        (self._infer_frame_count + self._drop_frame_count) \
-                        / self._infer_frame_count)
+                        infer_fps, drop_fps, scale_ratio)
                 self._infer_time_start = now
                 self._infer_frame_count = 0
                 self._drop_frame_count = 0
