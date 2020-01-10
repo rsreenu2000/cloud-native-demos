@@ -61,11 +61,20 @@ Then start the servicemonitor.yaml.
 Wait for a while, you will see three new discovered services in http://${NodeIP}:31009/service-discovery.
 Now you can try play with prometheus and grafana for the demos reported metrics.
 
-` ei_drop_fps `
-
-` ei_infer_fps `
+```shell
+ei_drop_fps
+ei_infer_fps
+ei_scale_ratio
+```
 
 ![Prometheus](../../doc/images/prom.png)
+
+## Grafana Dashboard for this demo
+
+Customized [`dashboard`](./Prometheus-Elastic-Inference.json) for this demo.
+Once imported in the Grafana, it will display the three metrics.
+
+![Grafana](../../doc/images/grafana.png)
 
 ## HPA ( Horizontal Pod Autoscaler )
 
