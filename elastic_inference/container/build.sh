@@ -99,6 +99,12 @@ function build_images {
 
     if [[ "$container" =~ ^(gws|all) ]]; then
         echo "Build gateway server container..."
+
+        if ! [ -x "$(command -v npm)" ]; then
+            echo 'Error: npm is not installed.' >&2
+            exit 1
+        fi
+
         cd ${top_dir}/spa
         npm install
         npm run init
