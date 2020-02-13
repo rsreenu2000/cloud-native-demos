@@ -18,14 +18,15 @@ class InferEngineTask(CLCNTask):
     Inference task.
     """
 
-    def __init__(self, input_queue, output_broker, report_metric_fps_fn=None):
+    def __init__(self, input_queue, output_broker, report_metric_fn=None):
         CLCNTask.__init__(self)
         self._input_queue = input_queue
         self._output_broker = output_broker
         self._infer_frame_count = 0
+        self._drop_frame_count = 0
         self._infer_time_start = 0
         self._cached_streams = {}
-        self._report_metric_fps_fn = report_metric_fps_fn
+        self._report_metric_fn = report_metric_fn
 
     def infer(self, frame):
         """
@@ -37,6 +38,8 @@ class InferEngineTask(CLCNTask):
         """
         Task entry
         """
+        idle_count = 0
+        max_infer_fps = 0
         self._infer_time_start = time.time()
         while not self.is_task_stopping:
             now = time.time()
@@ -49,7 +52,20 @@ class InferEngineTask(CLCNTask):
             msg = self._input_queue.pop()
             if msg is None:
                 time.sleep(0.05)
+                idle_count += 1
+                # reset the infer and drop fps when idle over 30s
+                if idle_count > 600:
+                    idle_count = 0
+                    LOG.info("Idle for 30 seconds")
+                    # idle means it has the potential to scale down
+                    # thus set the scale ratio to 0.5
+                    if self._report_metric_fn is not None:
+                        self._report_metric_fn(0, 0, 0.5)
+
                 continue
+
+            idle_count = 0
+            self._drop_frame_count += self._input_queue.drop()
 
             info = StreamInfo(msg.name, msg.category, "inferred")
             if info.id not in self._cached_streams.keys():
@@ -73,13 +89,27 @@ class InferEngineTask(CLCNTask):
             duration = now - self._infer_time_start
             self._infer_frame_count += 1
             if duration > 10:
+                infer_fps = self._infer_frame_count / duration
+                drop_fps = self._drop_frame_count / duration
+
                 LOG.info("[%s] Infer speed: %02f FPS", \
-                    info.category, self._infer_frame_count / duration)
-                if self._report_metric_fps_fn is not None:
-                    self._report_metric_fps_fn(
-                        self._infer_frame_count / duration)
+                    info.category, infer_fps)
+                LOG.info("[%s] Drop frame speed: %02f FPS", \
+                    info.category, drop_fps)
+
+                if infer_fps > max_infer_fps:
+                    max_infer_fps = infer_fps
+                if drop_fps > 0:
+                    scale_ratio = (infer_fps + drop_fps) / infer_fps
+                else:
+                    scale_ratio = infer_fps/max_infer_fps
+
+                if self._report_metric_fn is not None:
+                    self._report_metric_fn(
+                        infer_fps, drop_fps, scale_ratio)
                 self._infer_time_start = now
                 self._infer_frame_count = 0
+                self._drop_frame_count = 0
 
 
 class OpenVinoInferEngineTask(InferEngineTask):
@@ -91,12 +121,12 @@ class OpenVinoInferEngineTask(InferEngineTask):
     _DEFAULT_MODLE_NAME = "SqueezeNetSSD-5Class"
 
     def __init__(self, origin_frame_queue, inferred_frame_queue,
-                 report_metric_fps_fn=None,
+                 report_metric_fn=None,
                  model_dir=_DEFAULT_MODEL_DIR,
                  model_name=_DEFAULT_MODLE_NAME):
         InferEngineTask.__init__(self, origin_frame_queue, \
             inferred_frame_queue, \
-            report_metric_fps_fn)
+            report_metric_fn)
         LOG.info("Model dir: %s", model_dir)
         LOG.info("Model name: %s", model_name)
         self._plugin = self._init_openvino_cpu_plugin()

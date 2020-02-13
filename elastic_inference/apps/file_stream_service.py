@@ -12,7 +12,6 @@ import sys
 import queue
 import socket
 import redis
-import prometheus_client as prom
 
 APP_PATH = os.path.dirname(__file__)
 sys.path.append(APP_PATH)
@@ -42,21 +41,9 @@ class VideoFileaaS(CLCNAppBase):
                 os.path.basename(self._video_file_path))
         self._stream_info = StreamInfo(self._stream_name, self._category)
 
-        self._prometheus_gateway_host = self.get_env(
-            "PROMETHEUS_GATEWAY_HOST", None)
-        self._prometheus_gateway_port = self.get_env(
-            "PROMETHEUS_GATEWAY_PORT", "9091")
-        self._prometheus_registry = prom.CollectorRegistry()
-        self._metric_gauge_drop_frames = prom.Gauge(
-            'ei_drop_frames',
-            'Drop frames for infer',
-            registry=self._prometheus_registry)
-
     def run(self):
         redis_conn = redis.StrictRedis(self._redis_host, self._redis_port)
         out_queue = RedisFrameQueue(redis_conn, self._category)
-        out_queue.report_metric_drop_frames_fn = \
-            self._report_metric_drop_frame_to_prometheus
 
         frame_queue = queue.Queue(10)
         video_task = VideoFileTask(frame_queue,
@@ -69,16 +56,6 @@ class VideoFileaaS(CLCNAppBase):
         video_task.start()
         publisher_task.start()
 
-    def _report_metric_drop_frame_to_prometheus(self, num):
-        if self._prometheus_gateway_host is None or \
-            len(self._prometheus_gateway_host) == 0:
-            return
-        LOG.info("Publish dropped frame to prometheus: %d", num)
-        self._metric_gauge_drop_frames.set(num)
-        prom.push_to_gateway(
-            self._prometheus_gateway_host + ":" + self._prometheus_gateway_port,
-            job=self._stream_info.id,
-            registry=self._prometheus_registry)
 
 def start_app():
     """

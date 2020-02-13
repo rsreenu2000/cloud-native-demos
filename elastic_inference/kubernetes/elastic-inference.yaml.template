@@ -60,19 +60,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-infer-face-deployment
+  name: ei-infer-face-app
+  labels:
+    app: ei-infer-people-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ei-infer-face
+      app: ei-infer-face-app
   template:
     metadata:
       labels:
-        app: ei-infer-face
+        app: ei-infer-face-app
     spec:
       containers:
-      - name: ei-infer
+      - name: ei-infer-face-app
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
@@ -84,21 +86,23 @@ spec:
           value: ei-redis-svc
         - name: INFER_TYPE
           value: face
+        ports:
+        - name: web
+          containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ei-infer-face-svc
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: "8000"
+  name: ei-infer-face-app
+  labels:
+    app: ei-infer-face-app
 spec:
-  type: ClusterIP
   ports:
-    - port: 8000
+    - name: web
+      port: 8000
       targetPort: 8000
   selector:
-    app: ei-infer-face
+    app: ei-infer-face-app
 ---
 ############################################
 # Inference service for people recoginition
@@ -107,19 +111,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-infer-people-deployment
+  name: ei-infer-people-app
+  labels:
+    app: ei-infer-people-app
 spec:
   selector:
     matchLabels:
-      app: ei-infer-people
+      app: ei-infer-people-app
   replicas: 1
   template:
     metadata:
       labels:
-        app: ei-infer-people
+        app: ei-infer-people-app
     spec:
       containers:
-      - name: ei-infer
+      - name: ei-infer-people-app
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
@@ -131,21 +137,23 @@ spec:
           value: ei-redis-svc
         - name: INFER_TYPE
           value: people
+        ports:
+        - name: web
+          containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ei-infer-people-svc
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: "8000"
+  name: ei-infer-people-app
+  labels:
+    app: ei-infer-people-app
 spec:
-  type: ClusterIP
   ports:
-    - port: 8000
-      targetPort: 8000
+  - name: web
+    port: 8000
+    targetPort: 8000
   selector:
-    app: ei-infer-people
+    app: ei-infer-people-app
 ---
 ############################################
 # Inference service for car recoginition
@@ -154,19 +162,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-infer-car-deployment
+  name: ei-infer-car-app
+  labels:
+    app: ei-infer-car-app
 spec:
   selector:
     matchLabels:
-      app: ei-infer-car
+      app: ei-infer-car-app
   replicas: 1
   template:
     metadata:
       labels:
-        app: ei-infer-car
+        app: ei-infer-car-app
     spec:
       containers:
-      - name: ei-infer
+      - name: ei-infer-car-app
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
@@ -178,21 +188,23 @@ spec:
           value: ei-redis-svc
         - name: INFER_TYPE
           value: car
+        ports:
+        - name: web
+          containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ei-infer-car-svc
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: "8000"
+  name: ei-infer-car-app
+  labels:
+    app: ei-infer-car-app
 spec:
-  type: ClusterIP
   ports:
-    - port: 8000
-      targetPort: 8000
+  - name: web
+    port: 8000
+    targetPort: 8000
   selector:
-    app: ei-infer-car
+    app: ei-infer-car-app
 ---
 ############################################
 # Websocket server

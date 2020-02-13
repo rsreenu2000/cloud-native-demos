@@ -98,6 +98,12 @@ class FrameQueueBase:
             return None
         return FrameMessage.from_binary(binary)
 
+    def drop(self):
+        """
+        Drop overflow frame message from frame's queue
+        """
+        return self.drop_on_queuer()
+
     def is_stream_expired(self, info):
         """
         Judge whether a frame is expired on frame queue
@@ -115,6 +121,12 @@ class FrameQueueBase:
     def pop_on_queuer(self):
         """
         Pop message from frame queue
+        """
+        raise NotImplementedError(
+            "inherited class must implement this function.")
+    def drop_on_queuer(self):
+        """
+        Drop message from frame queue
         """
         raise NotImplementedError(
             "inherited class must implement this function.")
@@ -152,50 +164,21 @@ class RedisFrameQueue(FrameQueueBase):
     def __init__(self, redis_conn, category="face"):
         FrameQueueBase.__init__(self, category)
         self._redis = redis_conn
-        self._drop_frame = 0
-        self._report_drop_start = None
-        self._report_metric_drop_frames_fn = None
-
-    @property
-    def report_metric_drop_frames_fn(self):
-        """
-        Property of metric report function.
-        """
-        return self._report_metric_drop_frames_fn
-
-    @report_metric_drop_frames_fn.setter
-    def report_metric_drop_frames_fn(self, new):
-        """
-        Property of metric report function.
-        """
-        self._report_metric_drop_frames_fn = new
 
     def push_on_queuer(self, info, msg):
         msg_len = self._redis.rpush(self.name, msg)
         self._redis.setex(info.name + "_expire", "1", 2)
-        if msg_len > 32:
-            self._redis.ltrim(self.name, -32, -1)
-            self._drop_frame += 1
-
-        # report dropped frame
-        now = time.time()
-        if self._report_drop_start is None:
-            self._report_drop_start = now
-            return
-
-        duration = now - self._report_drop_start
-        if duration > 10:
-            LOG.info("[%s] Frame drop speed: %.2f FPS",
-                     self.name,
-                     float(self._drop_frame)/duration)
-            self._report_drop_start = now
-            if self._report_metric_drop_frames_fn is not None:
-                self._report_metric_drop_frames_fn(
-                    float(self._drop_frame)/duration)
-            self._drop_frame = 0
 
     def pop_on_queuer(self):
         return self._redis.lpop(self.name)
+
+    def drop_on_queuer(self):
+        msg_len = self._redis.llen(self.name)
+        drop_frame = 0
+        if msg_len > 32:
+            self._redis.ltrim(self.name, -32, -1)
+            drop_frame = msg_len - 32
+        return drop_frame
 
     def is_stream_expired(self, info):
         if not self._redis.exists(info.name + "_expire"):

@@ -13,8 +13,5 @@ ENV QUEUE_HOST="127.0.0.1"
 ENV QUEUE_PORT="6379"
 ENV INFER_TYPE="face"
 ENV STREAM_NAME=""
-# Prometheus gateway address for metric collection
-ENV PROMETHEUS_GATEWAY_HOST=""
-ENV PROMETHEUS_GATEWAY_PORT="9091"
 
 CMD ["/apps/file_stream_service.py"]
