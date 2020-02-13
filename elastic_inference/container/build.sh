@@ -2,7 +2,10 @@
 
 curr_dir=$(readlink -f $(dirname "${BASH_SOURCE[0]}"))
 top_dir=$(dirname "${curr_dir}")
+# swupd_mirror is used to accelerate the speed of ClearLinux's swupd out of US
 swupd_mirror="-u https://cdn-alt.download.clearlinux.org/update"
+# pip mirror is used to accelerate the speed of python pip
+pip_mirror="-i https://pypi.douban.com/simple"
 action="all"
 registry=""
 container="all"
@@ -59,6 +62,7 @@ function build_images {
             --build-arg http_proxy=$http_proxy \
             --build-arg https_proxy=$https_proxy \
             --build-arg swupd_args="$swupd_mirror" \
+            --build-arg pip_mirror="$pip_mirror" \
             -f container/ei-camera-stream-service.dockerfile . \
             -t ${registry}/ei-camera-stream-service:${tag}
     fi
@@ -71,6 +75,7 @@ function build_images {
             --build-arg http_proxy=$http_proxy \
             --build-arg https_proxy=$https_proxy \
             --build-arg swupd_args="$swupd_mirror" \
+            --build-arg pip_mirror="$pip_mirror" \
             -f container/ei-file-stream-service.dockerfile . \
             -t ${registry}/ei-file-stream-service:${tag}
     fi
@@ -83,6 +88,7 @@ function build_images {
             --build-arg http_proxy=$http_proxy \
             --build-arg https_proxy=$https_proxy \
             --build-arg swupd_args="$swupd_mirror" \
+            --build-arg pip_mirror="$pip_mirror" \
             -f container/ei-inference-service.dockerfile . \
             -t ${registry}/ei-inference-service:${tag}
     fi
@@ -93,6 +99,7 @@ function build_images {
             --build-arg http_proxy=$http_proxy \
             --build-arg https_proxy=$https_proxy \
             --build-arg swupd_args="$swupd_mirror" \
+            --build-arg pip_mirror="$pip_mirror" \
             -f container/ei-websocket-server.dockerfile . \
             -t ${registry}/ei-websocket-server:${tag}
     fi
@@ -115,6 +122,7 @@ function build_images {
             --build-arg http_proxy=$http_proxy \
             --build-arg https_proxy=$https_proxy \
             --build-arg swupd_args="$swupd_mirror" \
+            --build-arg pip_mirror="$pip_mirror" \
             -f container/ei-gateway-server.dockerfile . \
             -t ${registry}/ei-gateway-server:${tag}
     fi
