@@ -157,9 +157,12 @@ class NNFactory:
         """
         if model_name.lower() in [
                 "person-detection-retail-0013",
-                "person-vehicle-bike-detection-crossroad-0078",
-                "face-detection-retail-0005",
-                "squeezenetssd-5class"]:
-            return NNGeneralDetection(model_dir, model_name)
+                "person-vehicle-bike-detection-crossroad-0078_int8",
+                "person-vehicle-bike-detection-crossroad-0078_fp32",
+                "face-detection-retail-0005_fp32",
+                "face-detection-retail-0005_int8"
+                "squeezenetssd-5class"
+                ]:
+            LOG.warning("%s is not a recoginized model.", model_name.lower())
 
-        return None
+        return NNGeneralDetection(model_dir, model_name)

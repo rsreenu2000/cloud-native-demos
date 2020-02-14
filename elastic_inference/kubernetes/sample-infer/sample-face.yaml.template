@@ -5,16 +5,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-sample-face-deployment
+  name: ei-sample-face-fp32-deployment
 spec:
   selector:
     matchLabels:
-      app: ei-sample-face
+      app: ei-sample-face-fp32
   replicas: 1
   template:
     metadata:
       labels:
-        app: ei-sample-face
+        app: ei-sample-face-fp32
     spec:
       containers:
       - name: ei-fss
@@ -25,8 +25,31 @@ spec:
           value: head-pose-face-detection-female-and-male.mp4
         - name: QUEUE_HOST
           value: ei-redis-svc
-        - name: STREAM_NAME
-          value: sample-face
         - name: INFER_TYPE
-          value: face
-
+          value: face-fp32
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-sample-face-int8-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-sample-face-int8
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-sample-face-int8
+    spec:
+      containers:
+      - name: ei-fss
+        image: your-own-registry/ei-file-stream-service
+        imagePullPolicy: Always
+        env:
+        - name: VIDEO_FILE
+          value: head-pose-face-detection-female-and-male.mp4
+        - name: QUEUE_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: face-int8

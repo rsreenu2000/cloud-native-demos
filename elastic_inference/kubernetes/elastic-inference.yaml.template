@@ -60,32 +60,32 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-infer-face-app
+  name: ei-infer-face-int8-app
   labels:
-    app: ei-infer-face-app
+    app: ei-infer-face-int8-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ei-infer-face-app
+      app: ei-infer-face-int8-app
   template:
     metadata:
       labels:
-        app: ei-infer-face-app
+        app: ei-infer-face-int8-app
     spec:
       containers:
-      - name: ei-infer-face-app
+      - name: ei-infer-face-int8-app
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
-        - name: MODEL_NAME
-          value: "face-detection-retail-0005"
+        - name: INFER_MODEL_NAME
+          value: "face-detection-retail-0005_INT8"
         - name: INPUT_QUEUE_HOST
           value: ei-redis-svc
         - name: OUTPUT_BROKER_HOST
           value: ei-redis-svc
         - name: INFER_TYPE
-          value: face
+          value: face-int8
         ports:
         - name: web
           containerPort: 8000
@@ -93,16 +93,67 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ei-infer-face-app
+  name: ei-infer-face-int8-app
   labels:
-    app: ei-infer-face-app
+    app: ei-infer-face-int8-app
 spec:
   ports:
     - name: web
       port: 8000
       targetPort: 8000
   selector:
-    app: ei-infer-face-app
+    app: ei-infer-face-int8-app
+---
+############################################
+# Inference service for face recoginition
+# The inference model is https://docs.openvinotoolkit.org/2019_R2/_intel_models_face_detection_retail_0005_description_face_detection_retail_0005.html
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-infer-face-fp32-app
+  labels:
+    app: ei-infer-face-fp32-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ei-infer-face-fp32-app
+  template:
+    metadata:
+      labels:
+        app: ei-infer-face-fp32-app
+    spec:
+      containers:
+      - name: ei-infer-face-fp32-app
+        image: your-own-registry/ei-inference-service
+        imagePullPolicy: Always
+        env:
+        - name: INFER_MODEL_NAME
+          value: "face-detection-retail-0005_FP32"
+        - name: INPUT_QUEUE_HOST
+          value: ei-redis-svc
+        - name: OUTPUT_BROKER_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: face-fp32
+        ports:
+        - name: web
+          containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-infer-face-fp32-app
+  labels:
+    app: ei-infer-face-fp32-app
+spec:
+  ports:
+    - name: web
+      port: 8000
+      targetPort: 8000
+  selector:
+    app: ei-infer-face-fp32-app
 ---
 ############################################
 # Inference service for people recoginition
@@ -129,7 +180,7 @@ spec:
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
-        - name: MODEL_NAME
+        - name: INFER_MODEL_NAME
           value: "SqueezeNetSSD-5Class"
         - name: INPUT_QUEUE_HOST
           value: ei-redis-svc
@@ -162,32 +213,32 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-infer-car-app
+  name: ei-infer-car-int8-app
   labels:
-    app: ei-infer-car-app
+    app: ei-infer-car-int8-app
 spec:
   selector:
     matchLabels:
-      app: ei-infer-car-app
+      app: ei-infer-car-int8-app
   replicas: 1
   template:
     metadata:
       labels:
-        app: ei-infer-car-app
+        app: ei-infer-car-int8-app
     spec:
       containers:
-      - name: ei-infer-car-app
+      - name: ei-infer-car-int8-app
         image: your-own-registry/ei-inference-service
         imagePullPolicy: Always
         env:
-        - name: MODEL_NAME
-          value: "person-vehicle-bike-detection-crossroad-0078"
+        - name: INFER_MODEL_NAME
+          value: "person-vehicle-bike-detection-crossroad-0078_INT8"
         - name: INPUT_QUEUE_HOST
           value: ei-redis-svc
         - name: OUTPUT_BROKER_HOST
           value: ei-redis-svc
         - name: INFER_TYPE
-          value: car
+          value: car-int8
         ports:
         - name: web
           containerPort: 8000
@@ -195,16 +246,67 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ei-infer-car-app
+  name: ei-infer-car-int8-app
   labels:
-    app: ei-infer-car-app
+    app: ei-infer-car-int8-app
 spec:
   ports:
   - name: web
     port: 8000
     targetPort: 8000
   selector:
-    app: ei-infer-car-app
+    app: ei-infer-car-int8-app
+---
+############################################
+# Inference service for car recoginition
+# The inference model is https://docs.openvinotoolkit.org/2019_R1/_person_vehicle_bike_detection_crossroad_0078_description_person_vehicle_bike_detection_crossroad_0078.html
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-infer-car-fp32-app
+  labels:
+    app: ei-infer-car-fp32-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-car-fp32-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-infer-car-fp32-app
+    spec:
+      containers:
+      - name: ei-infer-car-fp32-app
+        image: your-own-registry/ei-inference-service
+        imagePullPolicy: Always
+        env:
+        - name: INFER_MODEL_NAME
+          value: "person-vehicle-bike-detection-crossroad-0078_FP32"
+        - name: INPUT_QUEUE_HOST
+          value: ei-redis-svc
+        - name: OUTPUT_BROKER_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: car-fp32
+        ports:
+        - name: web
+          containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ei-infer-car-fp32-app
+  labels:
+    app: ei-infer-car-fp32-app
+spec:
+  ports:
+  - name: web
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: ei-infer-car-fp32-app
 ---
 ############################################
 # Websocket server

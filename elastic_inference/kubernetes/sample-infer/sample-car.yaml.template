@@ -5,16 +5,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ei-sample-car-deployment
+  name: ei-sample-car-int8-deployment
 spec:
   selector:
     matchLabels:
-      app: ei-sample-car
+      app: ei-sample-car-int8
   replicas: 1
   template:
     metadata:
       labels:
-        app: ei-sample-car
+        app: ei-sample-car-int8
     spec:
       containers:
       - name: ei-fss
@@ -25,8 +25,31 @@ spec:
           value: person-bicycle-car-detection.mp4
         - name: QUEUE_HOST
           value: ei-redis-svc
-        - name: STREAM_NAME
-          value: sample-car
         - name: INFER_TYPE
-          value: car
-
+          value: car-int8
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ei-sample-car-fp32-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ei-sample-car-fp32
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ei-sample-car-fp32
+    spec:
+      containers:
+      - name: ei-fss
+        image: your-own-registry/ei-file-stream-service
+        imagePullPolicy: Always
+        env:
+        - name: VIDEO_FILE
+          value: person-bicycle-car-detection.mp4
+        - name: QUEUE_HOST
+          value: ei-redis-svc
+        - name: INFER_TYPE
+          value: car-fp32
