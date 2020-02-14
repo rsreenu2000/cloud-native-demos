@@ -1,12 +1,14 @@
 FROM clearlinux/openvino:latest
 
+ARG pip_mirror
+
 # create developer user to access /dev/video*
 RUN groupadd -g 44 -o developer
 RUN useradd -g 44 developer
 USER developer
 
 COPY ./apps /apps
-RUN pip install -r /apps/requirements.css.txt --user
+RUN pip install ${pip_mirror} -r /apps/requirements.css.txt --user
 
 # Camera device index, set to 0 for /dev/video0 by default
 ENV CAMERA_INDEX=0

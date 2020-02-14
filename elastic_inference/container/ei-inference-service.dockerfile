@@ -1,12 +1,14 @@
 FROM clearlinux/openvino:latest
 
+ARG pip_mirror
+
 RUN useradd developer
 USER developer
 
 COPY ./apps /apps
 COPY ./models /models
 
-RUN pip install -r /apps/requirements.ois.txt --user
+RUN pip install ${pip_mirror} -r /apps/requirements.ois.txt --user
 
 ENV MODEL_PATH="/models"
 ENV MODEL_NAME="SqueezeNetSSD-5Class"
