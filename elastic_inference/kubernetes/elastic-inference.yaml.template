@@ -62,7 +62,7 @@ kind: Deployment
 metadata:
   name: ei-infer-face-app
   labels:
-    app: ei-infer-people-app
+    app: ei-infer-face-app
 spec:
   replicas: 1
   selector:
