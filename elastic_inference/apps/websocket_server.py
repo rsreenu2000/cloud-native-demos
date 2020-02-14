@@ -63,9 +63,6 @@ class StreamWebSocketServer:
     async def _websocket_server_task(self, wsobj, path):
         LOG.info("Websocket server task start: %s path: %s", str(wsobj), path)
         target = path[1:]  # skip / prefix
-        if target not in list(self._streams.keys()):
-            LOG.error("Invalid path, close websocket.\n")
-            return
 
         if len(list(self._users.keys())) > 100:
             LOG.error("Exceed the max number of client connection: 100.")
