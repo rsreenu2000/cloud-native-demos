@@ -8,3 +8,4 @@ redis.conf
 containers/*.tgz
 models/
 *.yaml
+.cache

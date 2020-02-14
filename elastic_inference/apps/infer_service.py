@@ -53,12 +53,12 @@ class InferServiceApp(CLCNAppBase):
         LOG.info("Output broker host: %s", self.out_broker_host)
 
         self.infer_type = self.get_env("INFER_TYPE", "face")
-        self.model_name = self.get_env("MODEL_NAME")
+        self.model_name = self.get_env("INFER_MODEL_NAME")
 
         # MODEL_PATH env got higher priority
-        path = self.get_env("MODEL_PATH")
+        path = self.get_env("INFER_MODEL_PATH")
         if path is not None and len(path) != 0:
-            self.model_dir = self.get_env("MODEL_PATH")
+            self.model_dir = self.get_env("INFER_MODEL_PATH")
         else:
             self.model_dir = self.get_env("MODEL_DIR")
 

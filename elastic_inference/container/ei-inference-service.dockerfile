@@ -10,8 +10,8 @@ COPY ./models /models
 
 RUN pip install ${pip_mirror} -r /apps/requirements.ois.txt --user
 
-ENV MODEL_PATH="/models"
-ENV MODEL_NAME="SqueezeNetSSD-5Class"
+ENV INFER_MODEL_PATH="/models"
+ENV INFER_MODEL_NAME="SqueezeNetSSD-5Class"
 ENV INPUT_QUEUE_HOST="127.0.0.1"
 ENV OUTPUT_BROKER_HOST="127.0.0.1"
 ENV INFER_TYPE="face"
