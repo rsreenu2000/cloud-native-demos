@@ -63,9 +63,6 @@ class StreamWebSocketServer:
     async def _websocket_server_task(self, wsobj, path):
         LOG.info("Websocket server task start: %s path: %s", str(wsobj), path)
         target = path[1:]  # skip / prefix
-        if target not in list(self._streams.keys()):
-            LOG.error("Invalid path, close websocket.\n")
-            return
 
         if len(list(self._users.keys())) > 100:
             LOG.error("Exceed the max number of client connection: 100.")
@@ -89,14 +86,16 @@ class StreamWebSocketServer:
 
     async def _stream_status_monitor_task(self):
         LOG.info("Task stream status monitor task start.")
-        sub_obj = await aioredis.create_redis(
-            (self._stream_broker_redis_host,
-             self._stream_broker_redis_port))
+
         read_obj = await aioredis.create_redis(
             (self._stream_broker_redis_host,
              self._stream_broker_redis_port),
             encoding='utf-8')
         _ = [self._add_stream(item) for item in await read_obj.smembers("streams")]
+
+        sub_obj = await aioredis.create_redis(
+            (self._stream_broker_redis_host,
+             self._stream_broker_redis_port))
         ret = await sub_obj.psubscribe('__keyevent@0__:*')
         keyevent_channel = ret[0]
 
