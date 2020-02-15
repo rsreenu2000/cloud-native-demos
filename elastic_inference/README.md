@@ -3,6 +3,8 @@
 ## Design Principle
 This solution re-architect traditional monolithic inference pipeline to cloud native model. With ClearLinux as container base OS and OpenVINO library, the inference workload can be scaled vertically on heterogeneous hardware engine; while kubernetes also provide HPA(Horizontal POD Autoscaler) for horizontal scale according to the collected metrics from the whole system. The flexible scalability in this solution can help to meet with diverse requirements on Edge computing, such as diverse inference model size, diverse input source, etc.
 
+Please reference whitepaper ["Dynamically Scaling Video Inference at the Edge using Kubernetes* and Clear Linux* OS"](https://clearlinux.org/blogs-news/dynamically-scaling-video-inference-edge)
+
 _(NOTES: This project is only for demo purpose, please do not used in any production.)_
 
 ![Cloud Native Design Diagram](doc/images/cloud_native_design.png)
