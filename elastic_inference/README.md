@@ -108,9 +108,9 @@ _Note: Please get detail options and arguments for run-css.sh script via `./tool
 
 After deployed on kubernetes clusters, you can monitor following metrics
 * Inference FPS from individual inference engine = ei_infer_fps
-* Total inference FPS:  <img src="https://latex.codecogs.com/svg.latex?\Large&space;total\_infer\_fps=\sum \left ( ei\_infer\_fps \right )" />
+* Total inference FPS: ![](doc/images/total_infer_fps.png)
 * Drop FPS = ei_drop_fps
-* Total inference FPS:  <img src="https://latex.codecogs.com/svg.latex?\Large&space;total\drop\_fps=\sum \left ( ei\_drop\_fps \right )" />
-* Scale Ratio value used to do horizontal scale: <img src="https://latex.codecogs.com/svg.latex?\Large&space;scale\_ratio=\frac{ei\_infer\_fps + ei\_drop\_fps }{ ei\_infer\_fps }" />
+* Total drop FPS: ![](doc/images/total_drop_fps.png)
+* Scale Ratio value used to do horizontal scale: ![](doc/images/scale_ratio.png)
 
 ![](doc/images/grafana.png)
