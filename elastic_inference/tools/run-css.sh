@@ -19,7 +19,7 @@ Usage: $(basename "$0") [OPTION]...
 
   -d Debug mode that using local source to override container
   -v [camera index] default value is 0
-  -t [face|car|people] infererence type, default is people for body detection
+  -t [face-fp32|face-int8|car-int8|car-fp32|people] infererence type, default is people for body detection
   -s [stream name] default is host-camera_index
   -q <redis output queue host>
   -p <redis output queue port>
@@ -66,7 +66,6 @@ if [ "$DEBUG_MODE" == true ]; then
         -e QUEUE_HOST=${QUEUE_HOST} \
         -e QUEUE_PORT=${QUEUE_PORT} \
         --device=/dev/video${CAMERA_INDEX}:rwm \
-        --restart on-failure:5 \
         ${REGISTRY}/ei-camera-stream-service \
         /apps/camera_stream_service.py
 else
@@ -77,6 +76,5 @@ else
         -e QUEUE_HOST=${QUEUE_HOST} \
         -e QUEUE_PORT=${QUEUE_PORT} \
         --device=/dev/video${CAMERA_INDEX}:rwm \
-        --restart on-failure:5 \
         ${REGISTRY}/ei-camera-stream-service
 fi

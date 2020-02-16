@@ -13,7 +13,7 @@ RUN pip install ${pip_mirror} -r /apps/requirements.css.txt --user
 # Camera device index, set to 0 for /dev/video0 by default
 ENV CAMERA_INDEX=0
 # Inference type, such as face/people/car
-ENV INFER_TYPE="face"
+ENV INFER_TYPE="face-fp32"
 # Customize stream name, otherwise is <ip-address>-<infer type>
 ENV STREAM_NAME=""
 # FPS for camera stream
