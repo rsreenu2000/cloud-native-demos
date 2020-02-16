@@ -10,38 +10,60 @@ spec:
       app: ei-infer-people-app
   endpoints:
   - port: web
-      #      scheme: http
-      #path: '/metrics'
     interval: 15s
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: ei-infer-face-app
+  name: ei-infer-face-int8-app
   labels:
-    service-monitor: ei-infer-face-app
+    service-monitor: ei-infer-face-int8-app
 spec:
   selector:
     matchLabels:
-      app: ei-infer-face-app
+      app: ei-infer-face-int8-app
   endpoints:
   - port: web
-      #      scheme: http
-      #path: '/metrics'
     interval: 15s
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: ei-infer-car-app
+  name: ei-infer-face-fp32-app
   labels:
-    service-monitor: ei-infer-car-app
+    service-monitor: ei-infer-face-fp32-app
 spec:
   selector:
     matchLabels:
-      app: ei-infer-car-app
+      app: ei-infer-face-fp32-app
   endpoints:
   - port: web
-      #      scheme: http
-      #path: '/metrics'
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ei-infer-car-int8-app
+  labels:
+    service-monitor: ei-infer-car-int8-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-car-int8-app
+  endpoints:
+  - port: web
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ei-infer-car-fp32-app
+  labels:
+    service-monitor: ei-infer-car-fp32-app
+spec:
+  selector:
+    matchLabels:
+      app: ei-infer-car-fp32-app
+  endpoints:
+  - port: web
     interval: 15s

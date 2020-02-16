@@ -102,3 +102,15 @@ tools/run-css.sh -v 0 -q <kubernetes cluster address> -p 31002
 * `-q <kubernetes cluster address>`: Kubernete cluster external address
 * `-p 31002`: By default, the redis base frame queue service is at this port.
 _Note: Please get detail options and arguments for run-css.sh script via `./tools/run-css.sh -h`_.
+
+
+## Monitor Inference Metrics
+
+After deployed on kubernetes clusters, you can monitor following metrics
+* Inference FPS from individual inference engine = ei_infer_fps
+* Total inference FPS: ![](doc/images/total_infer_fps.png)
+* Drop FPS = ei_drop_fps
+* Total drop FPS: ![](doc/images/total_drop_fps.png)
+* Scale Ratio value used to do horizontal scale: ![](doc/images/scale_ratio.png)
+
+![](doc/images/grafana.png)
