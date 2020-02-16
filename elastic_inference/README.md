@@ -3,7 +3,7 @@
 ## Design Principle
 This solution re-architect traditional monolithic inference pipeline to cloud native model. With ClearLinux as container base OS and OpenVINO library, the inference workload can be scaled vertically on heterogeneous hardware engine; while kubernetes also provide HPA(Horizontal POD Autoscaler) for horizontal scale according to the collected metrics from the whole system. The flexible scalability in this solution can help to meet with diverse requirements on Edge computing, such as diverse inference model size, diverse input source, etc.
 
-Please reference whitepaper ["Dynamically Scaling Video Inference at the Edge using Kubernetes* and Clear Linux* OS"](https://clearlinux.org/blogs-news/dynamically-scaling-video-inference-edge)
+Please get detail from whitepaper ["Dynamically Scaling Video Inference at the Edge using Kubernetes* and Clear Linux* OS"](https://clearlinux.org/blogs-news/dynamically-scaling-video-inference-edge)
 
 _(NOTES: This project is only for demo purpose, please do not used in any production.)_
 
@@ -28,10 +28,10 @@ _(NOTES: This project is only for demo purpose, please do not used in any produc
     With different models' input, the inference service can be used for any recognition or detection. Following models are used in this solution for demo purpose:
 
     * people/body detection: [SqueezeNetSSD-5Class](https://github.com/intel/Edge-optimized-models/tree/master/SqueezeNet%205-Class%20detection)
-    * face detection: uses [face-detection-retail-0005](https://docs.openvinotoolkit.org/2019_R2/_intel_models_face_detection_retail_0005_description_face_detection_retail_0005.html)
-    * car detection: uses [person-vehicle-bike-detection-crossroad-0078](https://docs.openvinotoolkit.org/2019_R1/_person_vehicle_bike_detection_crossroad_0078_description_person_vehicle_bike_detection_crossroad_0078.html)
+    * face detection ([INT8](https://download.01.org/opencv/2019/open_model_zoo/R2/20190628_180000_models_bin/face-detection-retail-0005/INT8/)/[FP32](https://download.01.org/opencv/2019/open_model_zoo/R2/20190628_180000_models_bin/face-detection-retail-0005/FP32/)): uses [face-detection-retail-0005](https://docs.openvinotoolkit.org/2019_R2/_intel_models_face_detection_retail_0005_description_face_detection_retail_0005.html)
+    * car detection ([INT8](https://download.01.org/opencv/2019/open_model_zoo/R2/20190628_180000_models_bin/person-vehicle-bike-detection-crossroad-0078/INT8/)/[FP32](https://download.01.org/opencv/2019/open_model_zoo/R2/20190628_180000_models_bin/person-vehicle-bike-detection-crossroad-0078/FP32/)): uses [person-vehicle-bike-detection-crossroad-0078](https://docs.openvinotoolkit.org/2019_R1/_person_vehicle_bike_detection_crossroad_0078_description_person_vehicle_bike_detection_crossroad_0078.html)
 
-    _Note: This project will not provide above models for downloading, but the container's build script will help to download when constructing the container image on your own._
+    _Note: This project will not provide above models for downloading, but the container's [build script](tools/download-models.sh) will help to download when constructing the container image on your own._
 
 4. **Stream Broker Service**
 
