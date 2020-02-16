@@ -113,4 +113,6 @@ After deployed on kubernetes clusters, you can monitor following metrics
 * Total drop FPS: ![](doc/images/total_drop_fps.png)
 * Scale Ratio value used to do horizontal scale: ![](doc/images/scale_ratio.png)
 
+Please get detail at **[Inference Metrics](doc/inference_metrics.md)**
+
 ![](doc/images/grafana.png)
