@@ -69,6 +69,8 @@ _NOTE: Please get detail options and arguments for build.sh via `./container/bui
 
 ### Deploy & Test on kubernetes cluster
 
+_Note: This project has been tested on minikube cluster with kubernetes at versions 1.15.0, 1.16.0, 1.17.0._
+
 1. Generate kubernetes yaml file with your own registry name like:
 ```
 tools/tools/gen-k8s-yaml.sh -f kubernetes/elastic-inference.yaml.template -r <your container registry>
