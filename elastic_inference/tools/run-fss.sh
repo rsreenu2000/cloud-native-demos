@@ -7,7 +7,7 @@ top_dir=$(readlink -f ${curr_dir}/../)
 
 DEBUG_MODE=false
 VIDEO_FILE="head-pose-face-detection-female-and-male.mp4"
-INFER_TYPE="face"
+INFER_TYPE="people"
 STREAM_NAME=""
 QUEUE_HOST="127.0.0.1"
 QUEUE_PORT="6379"
@@ -19,7 +19,7 @@ Usage: $(basename "$0") [OPTION]...
 
   -d Debug mode that using local source to override container
   -v [video file name] default is head-pose-face-detection-female-and-male.mp4
-  -t [face|car|people] infererence type, default is people for body detection
+  -t [face-fp32|face-int8|car-int8|car-fp32|people] infererence type, default is people for body detection
   -s [stream name] default is host-camera_index
   -q <redis output queue host>
   -p <redis output queue port>

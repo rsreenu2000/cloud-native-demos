@@ -89,6 +89,9 @@ After the above steps, the kubernete cluster will expose two services via NodePo
     Dashboard SPA web for result preview as follows:
 ![](doc/images/spa.png)
 
+You can also run INT8 and FP32 inference model at same time as follows:
+![](doc/images/spa_int8_fp32.png)
+
 4. Test camera stream producing for inference
 ```
 tools/run-css.sh -v 0 -q <kubernetes cluster address> -p 31002

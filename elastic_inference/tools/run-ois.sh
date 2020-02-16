@@ -18,7 +18,7 @@ function usage {
 Usage: $(basename "$0") [OPTION]...
 
   -d Debug mode that using local source to override container
-  -t [face|car|people] infererence type, default is people for body detection
+  -t [face-fp32|face-int8|car-int8|car-fp32|people] infererence type, default is people for body detection
   -i <input queue host>
   -o <output broker host>
   -p <prometheus port>
