@@ -1,6 +1,6 @@
 # Dynamic Scale Inference Engine to Improve Inference Performance
 
-As mentioned in [Inference Metrics](doc/inference_metrics.md), the inference performance might be impacted by
+As mentioned in [Inference Metrics](inference_metrics.md), the inference performance might be impacted by
 
   1. Computation capacibility of inference engine. Inference engine might be accelerated by heterogonous engine or using CPU SIMD instruction like AVX512 VNNI.
   2. Replicas of inference engine for same inference workload. Operator can scale more replicas to balance inference workloads. More replicas, less inference rate for single replica.
@@ -10,7 +10,7 @@ As mentioned in [Inference Metrics](doc/inference_metrics.md), the inference per
 So it is impossible to allocate fixed computation resource for dynamic workloads like number of streams, inference model etc. You can use horizontal scaling approach to improve:
 
   1. Kubernete operator can do horizontal scale via ```kubectl``` command or via dashboard
-  2. HPA (Horizontal POD Autoscaler) base on [Inference Metrics](doc/inference_metrics.md)
+  2. HPA (Horizontal POD Autoscaler) base on [Inference Metrics](inference_metrics.md)
 
 ## Horizontal Scale Manually
 
