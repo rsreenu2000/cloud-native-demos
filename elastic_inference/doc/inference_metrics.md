@@ -66,23 +66,40 @@ kubectl apply -f servicemonitoring.yaml
 
 ## View from Inference Service
 
-You can read metrics value from inference service after expose internal port 8000 to external NodePort.
+You can read metrics value from inference service after exposing individual inference service via NodePort.
+
+```
+kubectl patch svc ei-infer-face-fp32-app --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+```
 
 ![](images/view_metrics_from_inference_service.png)
 
 ## View from Prometheus
 
-You can monitor metrics from prometheus.
+You can monitor metrics from prometheus after exposing prometheus-k8s via NodePort as:
+
+```
+# Expose prometheus-k8s service via NodePort for external access
+kubectl patch svc prometheus-k8s -n monitoring --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+```
 
 ![](images/view_metrics_from_prometheus_service.png)
 
 ## View from Grafana
 
-You can monitor individual and cluster-wide metrics on grafana. You need create customize graph and add following metrics:
+You can monitor individual and cluster-wide metrics on grafana after exposing grafana service via NodePort.
+
+```
+# Expose grafana service via NodePort for external access
+kubectl patch svc grafana -n monitoring --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+```
+
+You also need create customize graph and add following metrics:
 - ei_infer_fps
 - ei_drop_fps
 - sum(ei_infer_fps)
 - sum(ei_drop_fps)
 - ei_scale_ratio
+
 
 ![](images/grafana.png)
