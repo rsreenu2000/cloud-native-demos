@@ -70,6 +70,17 @@ Auto scale need base on the specific metrics like CPU usage like below
 kubectl autoscale deployment ei-infer-car-fp32-app --cpu-percent=80 --min=1 --max=4
 ```
 
+or
+
+```
+cd cloud-native-demo/elastic_inference/kubernetes/monitoring
+kubectl apply -f hpa-infer-car-fp32-on-metric-cpu.yaml
+```
+
 After few minutes (4~10minutes), the replicas of ei-infer-car-fp32-app will be scaled up, so inference FPS was improved and drop FPS was reduced.
 
 ![](images/hpa_enable_duration.png)
+
+_(Note: This is an example, please change the deployment name from ei-infer-car-fp32-app to others if need)_
+
+_(Note: The autoscaling version v1 in [hpa-infer-car-fp32-on-metric-cpu.yaml](../kubernetes/monitoring/hpa-infer-car-fp32-on-metric-cpu.yaml) was tested on kubernetes v1.16.0, please use ```kubectl api-versions``` to check your API version for autoscaling then change accordingly.)_
