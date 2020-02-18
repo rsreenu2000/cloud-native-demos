@@ -59,7 +59,7 @@ To monitor inference service, you need:
     
 ```
 cd cloud-native-demo/elastic_inference/kubernetes/monitoring
-kubectl apply -f servicemonitoring.yaml
+kubectl apply -f servicemonitor.yaml
 ```
 
 # View Inference Metrics
