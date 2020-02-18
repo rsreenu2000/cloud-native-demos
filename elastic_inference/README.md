@@ -8,6 +8,7 @@ Please get detail from whitepaper ["Dynamically Scaling Video Inference at the E
 Please get detail about
 - [inference metrics](doc/inference_metrics.md)
 - [dynamic scale](doc/dynamic_scale.md)
+- [HPA on custom inference metric](doc/hpa_on_custom_metrics.md)
 
 _(NOTES: This project is only for demo purpose, please do not used in any production.)_
 

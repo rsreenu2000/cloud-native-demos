@@ -83,4 +83,6 @@ After few minutes (4~10minutes), the replicas of ei-infer-car-fp32-app will be s
 
 _(Note: This is an example, please change the deployment name from ei-infer-car-fp32-app to others if need)_
 
-_(Note: The autoscaling version v1 in [hpa-infer-car-fp32-on-metric-cpu.yaml](../kubernetes/monitoring/hpa-infer-car-fp32-on-metric-cpu.yaml) was tested on kubernetes v1.16.0, please use ```kubectl api-versions``` to check your API version for autoscaling then change accordingly.)_
+_(Note: The autoscaling version v1 in [hpa-infer-car-fp32-on-metric-cpu.yaml](../kubernetes/scale/hpa-infer-car-fp32-on-metric-cpu.yaml) was tested on kubernetes v1.16.0, please use ```kubectl api-versions``` to check your API version for autoscaling then change accordingly.)_
+
+CPU metric might not reflect the inference performance, so please refer [HPA base on custom inference metics](hpa_on_custom_metrics.md) for advanced HPA feature.

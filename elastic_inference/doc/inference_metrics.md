@@ -31,13 +31,13 @@ Since prometheus + grafana is very common monitoring tool but its configuration 
 
 ## Install kube-prometheus
 
-1. Clone latest release
+1. Clone v0.3.0
 
     ```
-    git clone https://github.com/coreos/kube-prometheus.git -b release-0.4
+    git clone https://github.com/coreos/kube-prometheus.git -b v0.3.0
     ```
 
-    _(Note: you may use the latest release newer than release-0.4)_
+    _(Note: other branch or tag might not work with custom metics based HPA.)_
 
 2. Install
     ```
@@ -85,6 +85,8 @@ kubectl patch svc prometheus-k8s -n monitoring --type='json' -p '[{"op":"replace
 
 ![](images/view_metrics_from_prometheus_service.png)
 
+_(Note: If you could get metric value from above step - "View from Inference Service" but could not get value in this step, the most issue is caused by invalid timezone or date on kubernete cluster.)_
+
 ## View from Grafana
 
 You can monitor individual and cluster-wide metrics on grafana after exposing grafana service via NodePort.
@@ -100,6 +102,5 @@ You also need create customize graph and add following metrics:
 - sum(ei_infer_fps)
 - sum(ei_drop_fps)
 - ei_scale_ratio
-
 
 ![](images/grafana.png)
