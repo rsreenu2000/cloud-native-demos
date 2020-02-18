@@ -85,6 +85,8 @@ kubectl patch svc prometheus-k8s -n monitoring --type='json' -p '[{"op":"replace
 
 ![](images/view_metrics_from_prometheus_service.png)
 
+_(Note: If you could get metric value from above step - "View from Inference Service" but could not get value in this step, the most issue is caused by invalid timezone or date on kubernete cluster.)_
+
 ## View from Grafana
 
 You can monitor individual and cluster-wide metrics on grafana after exposing grafana service via NodePort.
@@ -100,6 +102,5 @@ You also need create customize graph and add following metrics:
 - sum(ei_infer_fps)
 - sum(ei_drop_fps)
 - ei_scale_ratio
-
 
 ![](images/grafana.png)
