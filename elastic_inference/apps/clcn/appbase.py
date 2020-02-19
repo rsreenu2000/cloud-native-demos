@@ -2,6 +2,7 @@
 Application template for Clear Linux Cloud Native (CLCN) Solutions.
 """
 import os
+import sys
 import logging
 import asyncio
 import threading
@@ -69,6 +70,8 @@ class CLCNTask(threading.Thread):
                 self.execute()
         except:         # pylint: disable=bare-except
             LOG.error("[Task-%s] Failed!", self.name, exc_info=True)
+            CLCNTask.stop_all_tasks()
+            sys.exit(1)
             return
         LOG.info("[Task - %s] Completed!", self.name)
 
