@@ -89,6 +89,10 @@ spec:
         ports:
         - name: web
           containerPort: 8000
+      initContainers:
+        - name: init-infer-face-int8-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
 ---
 apiVersion: v1
 kind: Service
@@ -140,6 +144,10 @@ spec:
         ports:
         - name: web
           containerPort: 8000
+      initContainers:
+        - name: init-infer-face-fp32-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
 ---
 apiVersion: v1
 kind: Service
@@ -191,6 +199,11 @@ spec:
         ports:
         - name: web
           containerPort: 8000
+      initContainers:
+        - name: init-infer-people-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
+
 ---
 apiVersion: v1
 kind: Service
@@ -242,6 +255,11 @@ spec:
         ports:
         - name: web
           containerPort: 8000
+      initContainers:
+        - name: init-infer-car-int8-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
+
 ---
 apiVersion: v1
 kind: Service
@@ -293,6 +311,11 @@ spec:
         ports:
         - name: web
           containerPort: 8000
+      initContainers:
+        - name: init-infer-car-fp32-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
+
 ---
 apiVersion: v1
 kind: Service
@@ -334,6 +357,10 @@ spec:
         env:
         - name: STREAM_BROKER_REDIS_HOST
           value: ei-redis-svc
+      initContainers:
+        - name: init-ei-websocket-server
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
 ---
 apiVersion: v1
 kind: Service
@@ -376,6 +403,10 @@ spec:
           value: ei-redis-svc
         - name: WEBSOCKET_SERVER_HOST
           value: ei-websocket-server-svc
+      initContainers:
+        - name: init-ei-gateway-server
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
 ---
 apiVersion: v1
 kind: Service

@@ -27,4 +27,7 @@ spec:
           value: ei-redis-svc
         - name: INFER_TYPE
           value: people
-
+      initContainers:
+        - name: init-sample-people-app
+          image: busybox:1.31
+          command: ['sh', '-c', 'until nslookup ei-redis-svc; do echo waiting for ei-redis-svc; sleep 2; done;']
