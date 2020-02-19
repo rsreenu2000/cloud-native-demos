@@ -17,7 +17,6 @@ download_prometheus() {
 }
 
 apply_patch() {
-
     if [ ! -f ${top_dir}/.cache/kube-prometheus.patch ]; then
         cat > ${top_dir}/.cache/kube-prometheus.patch << '_EOF'
 diff --git a/manifests/grafana-service.yaml b/manifests/grafana-service.yaml
@@ -66,6 +65,7 @@ install_yaml() {
     kubectl apply -f manifests
 }
 
+mkdir -p ${top_dir}/.cache
 download_prometheus
 apply_patch
 install_yaml
