@@ -166,7 +166,7 @@ class RedisFrameQueue(FrameQueueBase):
         self._redis = redis_conn
 
     def push_on_queuer(self, info, msg):
-        msg_len = self._redis.rpush(self.name, msg)
+        self._redis.rpush(self.name, msg)
         self._redis.setex(info.name + "_expire", "1", 2)
 
     def pop_on_queuer(self):
