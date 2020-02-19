@@ -31,6 +31,8 @@ Since prometheus + grafana is very common monitoring tool but its configuration 
 
 ## Install kube-prometheus
 
+_(Note: you can also use [install-kube-prometheus.sh](../tools/install-kube-prometheus.sh) or refer below steps.)_
+
 1. Clone v0.3.0
 
     ```
