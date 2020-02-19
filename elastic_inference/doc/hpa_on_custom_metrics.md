@@ -16,6 +16,8 @@ If ei_scale_ratio = 2, means need use two replicas of inference engine to reduce
 
 ## Install k8s-prometheus-adapter
 
+_(Note: you can also use [install-k8s-prometheus-adapter.sh](../tools/install-k8s-prometheus-adapter.sh) or refer below steps.)_
+
 1. Create namespace `custom-metrics`
 
 ```
