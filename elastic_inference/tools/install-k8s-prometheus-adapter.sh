@@ -6,6 +6,7 @@ top_dir=$(dirname "${curr_dir}")
 source ${curr_dir}/common.sh
 
 install_key() {
+  cd ${top_dir}/.cache
   export PURPOSE=serving
   openssl req -x509 -sha256 -new -nodes -days 365 -newkey rsa:2048 -keyout ${PURPOSE}-ca.key -out ${PURPOSE}-ca.crt -subj "/CN=ca"
   echo '{"signing":{"default":{"expiry":"43800h","usages":["signing","key encipherment","'${PURPOSE}'"]}}}' > "${PURPOSE}-ca-config.json"
@@ -56,6 +57,7 @@ install_yaml() {
     kubectl apply -f deploy/manifests/
 }
 
+mkdir -p ${top_dir}/.cache
 kubectl create namespace custom-metrics
 install_key
 download_prometheus_adapter

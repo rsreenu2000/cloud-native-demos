@@ -10,6 +10,7 @@ top_dir=$(dirname "${curr_dir}")
 
 source ${curr_dir}/common.sh
 
+mkdir -p ${top_dir}/.cache
 cd ${top_dir}/.cache
 
 download_file sample-videos.zip \

@@ -50,15 +50,14 @@ class StreamWebSocketServer:
         self._streams[sid].cancel()
         del self._streams[sid]
 
-    def _on_update(self, stream_list, is_add=True):
-        if is_add:
-            for new_item in stream_list:
-                if new_item not in list(self._streams.keys()):
-                    self._add_stream(new_item)
-        else:
-            for old_item in list(self._streams.keys()):
-                if old_item not in stream_list:
-                    self._del_stream(old_item)
+    def _on_update(self, stream_list):
+        for new_item in stream_list:
+            if new_item not in list(self._streams.keys()):
+                self._add_stream(new_item)
+
+        for old_item in list(self._streams.keys()):
+            if old_item not in stream_list:
+                self._del_stream(old_item)
 
     async def _websocket_server_task(self, wsobj, path):
         LOG.info("Websocket server task start: %s path: %s", str(wsobj), path)
@@ -93,24 +92,11 @@ class StreamWebSocketServer:
             encoding='utf-8')
         _ = [self._add_stream(item) for item in await read_obj.smembers("streams")]
 
-        sub_obj = await aioredis.create_redis(
-            (self._stream_broker_redis_host,
-             self._stream_broker_redis_port))
-        ret = await sub_obj.psubscribe('__keyevent@0__:*')
-        keyevent_channel = ret[0]
-
         try:
             while True:
-                msg = await keyevent_channel.get()
-                if msg is None:
-                    break
-                (channel, sid) = msg
-                if channel == b"__keyevent@0__:sadd" and sid == b"streams":
-                    self._on_update(await read_obj.smembers("streams"), True)
-                elif channel == b"__keyevent@0__:srem" and sid == b"streams":
-                    self._on_update(await read_obj.smembers("streams"), False)
+                self._on_update(await read_obj.smembers("streams"))
+                await asyncio.sleep(1)
         finally:
-            sub_obj.close()
             read_obj.close()
         LOG.info("Task stream status monitor task stop.")
 
